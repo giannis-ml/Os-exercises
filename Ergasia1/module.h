@@ -2,29 +2,40 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
 
 #define MAX_LINE_LENGTH 1024
 
-typedef struct
+// struct for voter
+typedef struct Human
 {
     int id;
     char *lname;
     char *fname;
     int zip;
-    char voted;
+    char *voted;
 } Human;
 
-typedef struct Ht_item
+// struct for implementing bucket
+typedef struct Bucket
 {
     int key;
-    Human *item;
-} Ht_item;
+    int size;            // number of items in bucket
+    int count;           // count of items in bucket
+    Human *voters;       // records of bucket
+    struct Bucket *next; // pointer to next bucket in case of overflow buckets
+} Bucket;
 
+// struct for implementing Hashtable
 typedef struct HashTable
 {
-    Ht_item **bucket;
-    int size;
-    int count;
+    Bucket **buckets; // pointer to buckets
+    int size;         // number of total entries
+    int count;        // counter of total entries
+    int buckets_num;  // number of buckets
+    int update;       // number of buckets when we will move to next round
+    int round;
+    int pointer; // index for the bucket that will be split
 } HashTable;
 
 int numOfLinesInTheFile(char *);
@@ -33,10 +44,8 @@ HashTable *createHashTable(int);
 
 void freeTable(HashTable *);
 
-Ht_item *createItem(int, Human *);
+int hashCode(int, int, int);
 
-void freeItem(Ht_item *);
+void insert_in_hashtable(HashTable *, Human);
 
-int hashCode(int, int);
-
-void insert(HashTable *, Human);
+void insert_in_bucket(HashTable *, Bucket *, Human, int);

@@ -20,7 +20,7 @@ KEY_PER_BUCKET= 1
 all: $(PROGRAM)
 
 $(PROGRAM): $(OBJ1) $(OBJ2)
-	$(CC) -o  $(PROGRAM) $(OBJ1) $(OBJ2) 
+	$(CC) -o  $(PROGRAM) $(OBJ1) $(OBJ2) -lm
 
 $(OBJ1): $(EXEC)
 	$(CC) -c $(EXEC)

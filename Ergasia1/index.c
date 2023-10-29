@@ -3,6 +3,7 @@
 int main(int argc, char **argv)
 {
 
+    // read the command line arguments
     char *registered_voters;
     int bucket_entries = 0;
 
@@ -29,78 +30,56 @@ int main(int argc, char **argv)
 
     Human *voters;
 
-    voters = malloc(length * sizeof(Human)); // Works fine
+    // array of structs
+    voters = malloc(length * sizeof(Human));
 
     char delim[2] = " ";
     char *token; // Works fine
 
-    int *id = malloc(length * sizeof(int));
-    char **fname = malloc(length * sizeof(char *));
+    char **info;
+    info = malloc(length * sizeof(char *));
 
     for (int i = 0; i < length; i++)
     {
-        fname[i] = malloc(MAX_LINE_LENGTH * sizeof(char));
+        info[i] = malloc(1024 * sizeof(char));
     }
-
-    char **lname = malloc(length * sizeof(char *));
-
-    for (int i = 0; i < length; i++)
-    {
-        lname[i] = malloc(MAX_LINE_LENGTH * sizeof(char));
-    }
-
-    int *zip = malloc(length * sizeof(int)); // Works fine
 
     int num_of_index = 0;
 
+    // iterate the file and fill an array with one word per position
     FILE *file = fopen(registered_voters, "r");
     while (fgets(line, MAX_LINE_LENGTH, file))
     {
 
         token = strtok(line, delim);
-        id[num_of_index] = atoi(token);
-
-        token = strtok(NULL, delim);
-        fname[num_of_index] = token;
-
-        token = strtok(NULL, delim);
-        lname[num_of_index] = token;
-
-        token = strtok(NULL, delim);
-        zip[num_of_index] = atoi(token);
-
-        voters[num_of_index].id = id[num_of_index];
-        voters[num_of_index].fname = fname[num_of_index];
-        voters[num_of_index].lname = lname[num_of_index];
-        voters[num_of_index].zip = zip[num_of_index];
-
-        num_of_index++;
+        while (token != NULL)
+        {
+            info[num_of_index] = strdup(token);
+            token = strtok(NULL, " ");
+            num_of_index++;
+        }
     }
 
-    for (int i = 0; i < length; i++)
+    int i, word_index;
+    // fill the array of structs according to array with data
+    for (i = 0; i < length; i++)
     {
-        // printf("Id: %d\n", voters[i].id);
-        printf("FirstName: %s\n", fname[i]);
-        // printf("Last Name: %s\n", voters[i].lname);
-        // printf("Zip: %d\n", voters[i].zip);
+        word_index = i * 4;
+        voters[i].id = atoi(info[word_index]);
+        voters[i].fname = info[word_index + 1];
+        voters[i].lname = info[word_index + 2];
+        voters[i].voted = "N";
+        voters[i].zip = atoi(info[word_index + 3]);
+    }
+    int size_of_hash_table = num_of_index / 4;
+
+    HashTable *ht = createHashTable(size_of_hash_table);
+
+    for (int i = 0; i < ht->size; i++)
+    {
+        insert_in_hashtable(ht, voters[i]);
     }
 
-    // int size_of_hash_table = num_of_index;
-
-    // HashTable *ht = createHashTable(num_of_index);
-
-    // for (int i = 0; i < ht->size; i++)
-    // {
-    //     insert(ht, voters[i]);
-    // }
-
-    // for (int i = 0; i < ht->size; i++)
-    // {
-    //     if (ht->bucket[i]->item != NULL)
-    //         printf("%s\n", ht->bucket[i]->item->fname);
-    //     else
-    //         printf("Empty\n");
-    // }
-
-    // fclose(file);
+    fclose(file);
+    freeTable(ht);
 }
