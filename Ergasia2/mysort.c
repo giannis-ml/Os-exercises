@@ -69,7 +69,16 @@ int main(int argc, char *argv[])
             // close the write fd because children will only read from this pipe
             close(pipes[i][1]);
 
-            // read.....
+            char *buffer;
+            ssize_t bytesRead = read(pipes[i][0], buffer, sizeof(buffer));
+            // Close read end in the child
+            close(pipes[i][0]);
+
+            if (bytesRead > 0)
+            {
+                buffer[bytesRead] = '\0';
+                printf("%s\n", buffer);
+            }
 
             // make leafs of tree
             for (int j = 0; j < num_of_children - i; j++)
@@ -82,20 +91,25 @@ int main(int argc, char *argv[])
                 }
                 if (second_child == 0)
                 {
+                    //....
                 }
             }
             exit(EXIT_SUCCESS);
         }
-    }
-    if (child_pid != 0 && second_child != 0)
-    {
-        for (i = 0; i < num_of_children; i++)
+        else
         {
             // close the read fd because parent will only write in this pipe
             close(pipes[i][0]);
-
-            // write.......
+            int share = parser->num_of_records / num_of_children;
+            if (i + 1 == num_of_children)
+            {
+                share = (parser->num_of_records / num_of_children) + parser->num_of_records - num_of_children * (parser->num_of_records / num_of_children);
+            }
+            for (int k = i * share; k < (i + 1) * share; k++)
+            {
+                // write...
+            }
         }
-        exit(EXIT_SUCCESS);
     }
+    exit(EXIT_SUCCESS);
 }

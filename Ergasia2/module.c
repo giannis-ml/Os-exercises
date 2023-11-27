@@ -1,5 +1,6 @@
 #include "module.h"
 
+// Parsing the file, store the data in one array of structs and returns it to main
 Parser *Parsing(char *data_file)
 {
     int fd = open(data_file, O_RDONLY);
