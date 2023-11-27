@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #define SIZEofBUFF 20
 #define SSizeofBUFF 6
@@ -13,3 +14,11 @@ typedef struct
     char FirstName[SIZEofBUFF];
     char postcode[SSizeofBUFF];
 } MyRecord;
+
+typedef struct
+{
+    MyRecord *records;
+    int num_of_records;
+} Parser;
+
+Parser *Parsing(char *);

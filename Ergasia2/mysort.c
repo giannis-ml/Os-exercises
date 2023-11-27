@@ -32,5 +32,13 @@ int main(int argc, char *argv[])
             sorting2 = argv[i + 1];
         }
     }
-    printf("%s %d %s %s\n", data_file, num_of_children, sorting1, sorting2);
+
+    Parser *parser;
+    parser = Parsing(data_file);
+
+    printf("RECORDS BEFORE SORTING: \n");
+    for (int i = 0; i < parser->num_of_records; i++)
+    {
+        printf("%d  %s  %s  %s\n", parser->records[i].custid, parser->records[i].LastName, parser->records[i].FirstName, parser->records[i].postcode);
+    }
 }
