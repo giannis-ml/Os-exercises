@@ -3,7 +3,7 @@
 int main(int argc, char *argv[])
 {
     char *data_file;
-    int num_of_children, i, j;
+    int num_of_children, i, j, child_pid, second_child;
     char *sorting1, *sorting2;
 
     if (argc != 9)
@@ -42,10 +42,21 @@ int main(int argc, char *argv[])
         printf("%d  %s  %s  %s\n", parser->records[i].custid, parser->records[i].LastName, parser->records[i].FirstName, parser->records[i].postcode);
     }
 
+    // create pipes for passing records to children
+    int pipes[num_of_children][2];
+    for (int i = 0; i < num_of_children; ++i)
+    {
+        if (pipe(pipes[i]) == -1)
+        {
+            perror("pipe");
+            exit(EXIT_FAILURE);
+        }
+    }
+
     // make middle children
     for (i = 0; i < num_of_children; i++)
     {
-        int child_pid = fork();
+        child_pid = fork();
 
         if (child_pid == -1)
         {
@@ -55,10 +66,15 @@ int main(int argc, char *argv[])
 
         if (child_pid == 0)
         {
+            // close the write fd because children will only read from this pipe
+            close(pipes[i][1]);
+
+            // read.....
+
             // make leafs of tree
             for (int j = 0; j < num_of_children - i; j++)
             {
-                int second_child = fork();
+                second_child = fork();
                 if (second_child == -1)
                 {
                     perror("fork");
@@ -70,5 +86,16 @@ int main(int argc, char *argv[])
             }
             exit(EXIT_SUCCESS);
         }
+    }
+    if (child_pid != 0 && second_child != 0)
+    {
+        for (i = 0; i < num_of_children; i++)
+        {
+            // close the read fd because parent will only write in this pipe
+            close(pipes[i][0]);
+
+            // write.......
+        }
+        exit(EXIT_SUCCESS);
     }
 }
