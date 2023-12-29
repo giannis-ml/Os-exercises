@@ -68,7 +68,6 @@ int main(int argc, char *argv[])
         {
             // close the write fd because children will only read from this pipe
             close(pipes[i][1]);
-
             char *buffer;
             ssize_t bytesRead = read(pipes[i][0], buffer, sizeof(buffer));
             // Close read end in the child

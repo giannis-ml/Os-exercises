@@ -14,7 +14,7 @@ EXEC= mysort.c
 
 PROGRAM= mysort
 
-DATA_FILE = testfiles-proj2/TestData-Proj2-03NOV2023/voters50.bin
+DATA_FILE = TestData-Proj2-03NOV2023/voters50.bin
 
 NUM_OF_CHILDREN = 4
 
